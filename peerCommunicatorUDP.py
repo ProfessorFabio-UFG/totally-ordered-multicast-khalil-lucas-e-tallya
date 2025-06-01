@@ -2,7 +2,8 @@ import pickle
 import threading
 import time
 from socket import *
-from constMP import * import random
+from constMP import * 
+import random
 from requests import get # Para obter IP público
 
 # Variáveis Globais para o algoritmo de Lamport
