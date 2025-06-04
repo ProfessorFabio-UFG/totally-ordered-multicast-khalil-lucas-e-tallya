@@ -6,6 +6,7 @@ port = GROUPMNGR_TCP_PORT
 membership = []
 
 def serverLoop():
+  global membership
   serverSock = socket(AF_INET, SOCK_STREAM)
   serverSock.bind(('0.0.0.0', port))
   serverSock.listen(6)
