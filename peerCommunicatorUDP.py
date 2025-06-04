@@ -55,6 +55,18 @@ def registerWithGroupManager():
     clientSock_gm.send(msg)
     clientSock_gm.close()
 
+def unregisterWithGroupManager():
+    clientSock_gm = socket(AF_INET, SOCK_STREAM)
+    print(f'Conectando ao gerenciador de grupo: {(GROUPMNGR_ADDR, GROUPMNGR_TCP_PORT)}')
+    clientSock_gm.connect((GROUPMNGR_ADDR, GROUPMNGR_TCP_PORT))
+    ipAddr = get_my_public_ip()
+    # PEER_UDP_PORT para comunicação de dados
+    req = {"op": "unregister", "ipaddr": ipAddr} 
+    msg = pickle.dumps(req)
+    print(f'Desregistrando com o gerenciador de grupo: {req}')
+    clientSock_gm.send(msg)
+    clientSock_gm.close()
+
 def getListOfPeers():
     global PEERS_ADDRESSES, ALL_PEER_IDS
     clientSock_gm = socket(AF_INET, SOCK_STREAM)
@@ -346,6 +358,8 @@ if __name__ == "__main__":
     msg_handler.join(timeout=5.0) # Espera a thread MsgHandler terminar
     delivery_manager.join(timeout=5.0) # Espera a thread DeliveryThread terminar
     print("Main: Threads auxiliares finalizadas.")
+
+    unregisterWithGroupManager()
 
     print(f'Main: Enviando logList (tamanho: {len(logList)}) para o servidor de comparação...')
     clientSock_to_cs = socket(AF_INET, SOCK_STREAM)

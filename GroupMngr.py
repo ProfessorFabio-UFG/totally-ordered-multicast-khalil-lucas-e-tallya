@@ -22,6 +22,9 @@ def serverLoop():
         list.append(m[0])
       print ('List of peers sent to server: ', list)
       conn.send(pickle.dumps(list))
+    elif req["op"] == "unregister":
+      membership = [m for m in membership if m["ipaddr"] != req["ipaddr"]]
+      print ('Unregistered peer: ', req)
     else:
       pass # fix (send back an answer in case of unknown op
 
