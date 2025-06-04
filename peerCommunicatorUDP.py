@@ -190,6 +190,7 @@ class MsgHandler(threading.Thread):
                     }
                     ack_msg_packed = pickle.dumps(ack_msg_payload)
                     for peer_ip in PEERS_ADDRESSES:
+                        print(f"Enviando ACK para {peer_ip} referente à mensagem acima")
                         sendSocket.sendto(ack_msg_packed, (peer_ip, PEER_UDP_PORT))
 
                 elif recv_msg_unpickled['type'] == 'ACK':
