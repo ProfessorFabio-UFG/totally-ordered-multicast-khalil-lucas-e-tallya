@@ -281,7 +281,7 @@ def waitToStart():
 # Início do código principal
 if __name__ == "__main__":
     recvSocket.bind(('0.0.0.0', PEER_UDP_PORT))
-    recvSocket.settimeout(0.5) 
+    recvSocket.settimeout(5) 
 
     registerWithGroupManager() 
     
@@ -319,7 +319,7 @@ if __name__ == "__main__":
     
     print(f"Main: Aguardando todas as {expected_total_delivered_messages} mensagens serem entregues...")
     # Heurística para timeout: 2 segundos por mensagem esperada + 30s de folga
-    wait_timeout_seconds = expected_total_delivered_messages * 2 + 30 
+    wait_timeout_seconds = expected_total_delivered_messages * 5 + 30 
     start_wait_deliver = time.time()
 
     while True:
