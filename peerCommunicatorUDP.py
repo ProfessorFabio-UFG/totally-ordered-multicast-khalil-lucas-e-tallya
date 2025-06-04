@@ -101,11 +101,14 @@ class DeliveryThread(threading.Thread):
                     if not message_buffer: # Verificar novamente após ordenação se esvaziou
                         continue
 
+                    print(f"Current buffer: {message_buffer}")
+
                     # Verificar se a mensagem no topo da fila pode ser entregue
                     msg_timestamp, msg_original_sender_id, msg_payload_tuple, received_acks = message_buffer[0]
                     
                     # Condição de entrega: ACK recebido de todos os N-1 outros peers
                     other_peer_ids_expected_for_ack = set(ALL_PEER_IDS) - {msg_original_sender_id}
+                    print(f"Received ACKs: {received_acks}")
                     
                     if other_peer_ids_expected_for_ack.issubset(received_acks):
                         delivered_msg_tuple_content = message_buffer.pop(0)
@@ -181,6 +184,7 @@ class MsgHandler(threading.Thread):
                     orig_data_ts = recv_msg_unpickled['original_data_timestamp']
                     orig_data_sender = recv_msg_unpickled['original_data_sender_id']
                     ack_sender = recv_msg_unpickled['ack_sender_id']
+                    print(f"ACK recebido de {ack_sender} referente à mensagem {orig_data_ts} de {orig_data_sender}")
                     
                     with buffer_lock:
                         for i, item_tuple in enumerate(message_buffer):
