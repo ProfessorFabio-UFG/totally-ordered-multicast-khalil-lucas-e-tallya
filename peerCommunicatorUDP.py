@@ -174,10 +174,8 @@ class MsgHandler(threading.Thread):
                     
                     with buffer_lock:
                         duplicate_index = next((index for index, item in enumerate(message_buffer)
-                            if item[0] == data_ts and item[1] == data_sender and item[2]), -1)
+                            if item[0] == data_ts and item[1] == data_sender), -1)
                         is_duplicate = duplicate_index != -1
-
-                        print(f"duplicate_index: {duplicate_index} | is_duplicate: {is_duplicate}")
 
                         if not is_duplicate:
                             message_buffer.append( (data_ts, data_sender, data_payload, set()) )
