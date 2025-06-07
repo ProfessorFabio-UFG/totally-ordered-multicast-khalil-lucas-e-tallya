@@ -122,7 +122,8 @@ class DeliveryThread(threading.Thread):
                     other_peer_ids_expected_for_ack = set(ALL_PEER_IDS) - {msg_original_sender_id}
                     print(f"Received ACKs: {received_acks}")
                     
-                    if other_peer_ids_expected_for_ack.issubset(received_acks):
+                    # Segunda condição de entrega: o payload da mensagem foi recebido
+                    if other_peer_ids_expected_for_ack.issubset(received_acks) and msg_payload_tuple is not None:
                         delivered_msg_tuple_content = message_buffer.pop(0)
                         # O payload da mensagem é (original_sender_id, message_number)
                         # No log, armazenamos (sender_id_da_mensagem_DATA, message_number_original)
@@ -172,10 +173,15 @@ class MsgHandler(threading.Thread):
                     data_payload = recv_msg_unpickled['payload'] 
                     
                     with buffer_lock:
-                        is_duplicate = any(item[0] == data_ts and item[1] == data_sender for item in message_buffer)
+                        duplicate_index = next((index for index, item in enumerate(message_buffer)
+                            if item[0] == data_ts and item[1] == data_sender and item[2]), -1)
+                        is_duplicate = duplicate_index != -1
+
                         if not is_duplicate:
                             message_buffer.append( (data_ts, data_sender, data_payload, set()) )
                             print(f"MsgHandler: Buffer DATA de {data_sender} (payload: {data_payload}, ts: {data_ts})")
+                        elif message_buffer[duplicate_index][2] is None:
+                            message_buffer[duplicate_index][2] = data_payload
                     
                     with clock_lock:
                         lamport_clock += 1
@@ -200,11 +206,18 @@ class MsgHandler(threading.Thread):
                     print(f"ACK recebido de {ack_sender} referente à mensagem {orig_data_ts} de {orig_data_sender}")
                     
                     with buffer_lock:
+                        added = False
                         for i, item_tuple in enumerate(message_buffer):
                             if item_tuple[0] == orig_data_ts and item_tuple[1] == orig_data_sender:
                                 # Adiciona o ID do remetente do ACK ao conjunto de ACKs da mensagem DATA original
                                 message_buffer[i][3].add(ack_sender) 
+                                added = True
                                 break
+
+                        if not added:
+                            ack_set = set()
+                            ack_set.add(ack_sender)
+                            message_buffer.append( (orig_data_ts, orig_data_sender, None, ack_set) )
                 
                 elif recv_msg_unpickled['type'] == 'STOP_HANDLER': 
                     print("MsgHandler: Recebido STOP_HANDLER. Terminando.")
