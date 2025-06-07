@@ -181,7 +181,9 @@ class MsgHandler(threading.Thread):
                             message_buffer.append( (data_ts, data_sender, data_payload, set()) )
                             print(f"MsgHandler: Buffer DATA de {data_sender} (payload: {data_payload}, ts: {data_ts})")
                         elif message_buffer[duplicate_index][2] is None:
-                            message_buffer[duplicate_index][2] = data_payload
+                            current_message = message_buffer[duplicate_index]
+                            new_message = (current_message[0], current_message[1], data_payload, current_message[3])
+                            message_buffer[duplicate_index] = new_message
                     
                     with clock_lock:
                         lamport_clock += 1
