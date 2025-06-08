@@ -113,14 +113,14 @@ class DeliveryThread(threading.Thread):
                     if not message_buffer: # Verificar novamente após ordenação se esvaziou
                         continue
 
-                    print(f"Current buffer: {message_buffer}")
+                    # print(f"Current buffer: {message_buffer}")
 
                     # Verificar se a mensagem no topo da fila pode ser entregue
                     msg_timestamp, msg_original_sender_id, msg_payload_tuple, received_acks = message_buffer[0]
                     
                     # Condição de entrega: ACK recebido de todos os N-1 outros peers
                     other_peer_ids_expected_for_ack = set(ALL_PEER_IDS) - {msg_original_sender_id}
-                    print(f"Received ACKs: {received_acks}")
+                    # print(f"Received ACKs: {received_acks}")
                     
                     # Segunda condição de entrega: o payload da mensagem foi recebido
                     if other_peer_ids_expected_for_ack.issubset(received_acks) and msg_payload_tuple is not None:
@@ -198,7 +198,7 @@ class MsgHandler(threading.Thread):
                     }
                     ack_msg_packed = pickle.dumps(ack_msg_payload)
                     for peer_ip in PEERS_ADDRESSES:
-                        print(f"Enviando ACK para {peer_ip} referente à mensagem acima")
+                        # print(f"Enviando ACK para {peer_ip} referente à mensagem acima")
                         sendSocket.sendto(ack_msg_packed, (peer_ip, PEER_UDP_PORT))
 
                 elif recv_msg_unpickled['type'] == 'ACK':
