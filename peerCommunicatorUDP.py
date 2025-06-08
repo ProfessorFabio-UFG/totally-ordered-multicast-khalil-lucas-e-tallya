@@ -206,7 +206,7 @@ class MsgHandler(threading.Thread):
                     orig_data_ts = recv_msg_unpickled['original_data_timestamp']
                     orig_data_sender = recv_msg_unpickled['original_data_sender_id']
                     ack_sender = recv_msg_unpickled['ack_sender_id']
-                    print(f"ACK recebido de {ack_sender} referente à mensagem {orig_data_ts} de {orig_data_sender}")
+                    print(f"ACK recebido de {ack_sender} referente à mensagem de {orig_data_sender} com relógio {orig_data_ts[0]}")
                     
                     with buffer_lock:
                         added = False
